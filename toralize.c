@@ -1,35 +1,28 @@
 #include "toralize.h"
 
-sReq *request(const char *dstip, const int dstport) {
+sReq *request(struct sockaddr_in *addr) {
     sReq *req;
 
     req = malloc(sizeof(struct proxy_request));
     req->vn = 4;
     req->cd = 1;
-    req->dstport = htons(dstport);
-    req->dstip = inet_addr(dstip);
+    req->dstport = addr->sin_port;
+    req->dstip = addr->sin_addr.s_addr;
     strncpy(req->userid, USERNAME, 7);
 
     return req;
 }
 
-int main(int argc, char *argv[]) {
-    char *host;
-    int port, s;
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {      
+    int s;
     struct sockaddr_in sock;
     sReq *req;
     sRep *rep;
     char buf[sizeof(struct proxy_reply)];
     int success;
+    int (*p)(int, const struct sockaddr*, socklen_t);
 
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <host> <port>\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-    host = argv[1];
-    port = atoi(argv[2]); // string -> int
-
+    p = dlsym(RTLD_NEXT, "connect");
     s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0)
     {
@@ -41,13 +34,12 @@ int main(int argc, char *argv[]) {
     sock.sin_port = htons(PROXY_PORT);
     sock.sin_addr.s_addr = inet_addr(PROXY);
 
-    if (connect(s, (struct sockaddr *)&sock, sizeof(sock))) {
+    if (p(s, (struct sockaddr *)&sock, sizeof(sock))) {
         perror("connect");
         exit(EXIT_FAILURE);
     }
 
-    printf("Connected to proxy\n");
-    req = request(host,port);
+    req = request((struct sockaddr_in *)addr);
     write(s, req, sizeof(struct proxy_request));
 
     memset(buf, 0, sizeof(struct proxy_reply));
@@ -56,6 +48,7 @@ int main(int argc, char *argv[]) {
         perror("read");
         free(req);
         close(s);
+
         exit(EXIT_FAILURE);
     }
 
@@ -63,7 +56,7 @@ int main(int argc, char *argv[]) {
     success = (rep->cd == 90);
     if (!success) {
         fprintf(stderr, "Unable to traverse" 
-            "the proxy, error code: %d", rep->cd);
+            " the proxy, error code: %d", rep->cd);
 
             close(s);
             free(req);
@@ -71,10 +64,9 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
     }
 
-    printf("Successfully connected through the proxy to "
-            "%s:%d\n", host, port);
+    printf("Connected through the proxy.\n");
 
-    close(s);
+    dup2(s, sockfd);
     free(req);
 
     return EXIT_SUCCESS;

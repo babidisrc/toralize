@@ -1,2 +1,17 @@
+PREFIX ?= /usr/bin
+SCRIPT_NAME = toralize
+
 all:
-	gcc toralize.c -o toralize
+	@echo "Use 'sudo make install' to set up toralize for your system."
+
+install:
+	@echo "Installing $(SCRIPT_NAME)..."
+	install -Dm755 toralize.sh $(PREFIX)/$(SCRIPT_NAME)
+	install -Dm644 toralize.so /usr/lib/toralize.so
+	@echo "Installation complete."
+
+uninstall:
+	@echo "Removing $(SCRIPT_NAME)..."
+	rm -f $(PREFIX)/$(SCRIPT_NAME)
+	rm -f /usr/lib/toralize.so
+	@echo "Uninstallation complete."
