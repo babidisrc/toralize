@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SO_PATH="$(dirname "$(realpath "$0")")/toralize.so"
+SO_PATH="$(dirname "$(realpath "$0")")/bin/toralize.so"
 
 if [ -f "$SO_PATH" ]; then
     export LD_PRELOAD="$SO_PATH"

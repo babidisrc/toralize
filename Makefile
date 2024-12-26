@@ -6,8 +6,8 @@ all:
 
 install:
 	@echo "Installing $(SCRIPT_NAME)..."
-	install -Dm755 toralize.sh $(PREFIX)/$(SCRIPT_NAME)
-	install -Dm644 toralize.so /usr/lib/toralize.so
+	install -Dm755 install.sh $(PREFIX)/$(SCRIPT_NAME)
+	install -Dm644 bin/toralize.so /usr/lib/toralize.so
 	@echo "Installation complete."
 
 uninstall:

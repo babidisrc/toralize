@@ -1,11 +1,5 @@
 #include "toralize.h"
 
-/*
-    Based on tutorials by Dr. Jonas Birch (2024).
-    Tutorials available on https://www.youtube.com/@dr-Jonas-Birch. 
-*/
-
-
 sReq *request(struct sockaddr_in *addr) {
     sReq *req;
 
