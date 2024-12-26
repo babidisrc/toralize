@@ -1,26 +1,27 @@
 #include "toralize.h"
 
-sReq *request(struct sockaddr_in *addr) {
+static sReq *request(struct sockaddr_in *addr) {
     sReq *req;
 
     req = malloc(sizeof(struct proxy_request));
+    req = memset(req, 0, sizeof(struct proxy_request));
     req->vn = 4;
     req->cd = 1;
     req->dstport = addr->sin_port;
     req->dstip = addr->sin_addr.s_addr;
-    strncpy(req->userid, USERNAME, 7);
+    memcpy(req->userid, USERNAME, 7);
 
     return req;
 }
 
 int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {      
-    int s;
+    int s = 0;
     struct sockaddr_in sock;
-    sReq *req;
-    sRep *rep;
+    sReq *req = 0;
+    sRep *rep = 0;
     char buf[sizeof(struct proxy_reply)];
-    int success;
-    int (*p)(int, const struct sockaddr*, socklen_t);
+    int success = 0;
+    connect_t p = 0;
 
     p = dlsym(RTLD_NEXT, "connect");
     s = socket(AF_INET, SOCK_STREAM, 0);
@@ -56,7 +57,7 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
     success = (rep->cd == 90);
     if (!success) {
         fprintf(stderr, "Unable to traverse" 
-            " the proxy, error code: %d", rep->cd);
+                " the proxy, error code: %d\n", rep->cd);
 
             close(s);
             free(req);

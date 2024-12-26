@@ -20,19 +20,22 @@ git clone https://github.com/babidisrc/toralize.git
 cd toralize
 ```
 
-2. Build the shared object file:
-
-```bash
-make build
-```
-
-3. Create the `install.sh` script in the main folder:
+2. Create the `install.sh` script in the main folder:
 
 ```bash
 #!/bin/bash
-export LD_PRELOAD="path/to/toralize/toralize.so"
+export LD_PRELOAD="path/to/toralize/libtoralize.so"
 "$@"
 unset LD_PRELOAD
+```
+
+3. Build the shared object file:
+
+```bash
+mkdir build
+cd build
+sudo cmake ..
+sudo make
 ```
 
 4. Install the library (requires root permissions):
@@ -48,14 +51,6 @@ To use Toralize, simply prepend the toralize command to your desired application
 ```bash
 toralize curl http://example.com
 toralize firefox
-```
-
-## Uninstallation
-
-If you need to remove Toralize from your system, run:
-
-```bash
-sudo make uninstall
 ```
 
 ## Acknowledgments
