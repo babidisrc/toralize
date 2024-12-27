@@ -1,6 +1,5 @@
 .vscode/
 build/
-install.sh
 toralize.so
 
 # Compiled Object files

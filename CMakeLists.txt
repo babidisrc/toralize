@@ -7,13 +7,11 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall          
     -Wextra        
 )
-if(WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32)
-else()
-    find_library(DL_LIBRARY dl REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${DL_LIBRARY})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE _GNU_SOURCE)
-endif()
+
+find_library(DL_LIBRARY dl REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${DL_LIBRARY})
+target_compile_definitions(${PROJECT_NAME} PRIVATE _GNU_SOURCE)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
@@ -23,8 +21,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 install(TARGETS ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} # usr/local/lib
-    LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} # usr/local/include
 )
 install(PROGRAMS install.sh

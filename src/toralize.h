@@ -3,6 +3,12 @@
 #include <string.h>
 #include <stdint.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <dlfcn.h> 
+#include <netdb.h>
+#include <sys/types.h>
 
 #define PROXY "127.0.0.1"
 #define PROXY_PORT 9050
@@ -31,54 +37,3 @@ typedef struct proxy_reply {
 
 static sReq *request(struct sockaddr_in*);
 int connect(int, const struct sockaddr*, socklen_t); 
-
-#ifdef _WIN32
-    // TODO: Support for Windows
-    #include <windows.h>
-    #include <winsock2.h> 
-    #include <ws2tcpip.h>
-    #include <Ws2ipdef.h>   
-
-    #define WIN32_LEAN_AND_MEAN
-    #define close closesocket
-    #define dup2 _dup2
-
-    #pragma comment(lib, "ws2_32.lib")
-
-    //----------------------
-    // Initialize Winsock
-    WSADATA wsaData;
-    int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != NO_ERROR) {
-        wprintf(L"WSAStartup function failed with error: %d\n", iResult);
-        return 1;
-    }
-    //----------------------
-    // Create a SOCKET for connecting to server
-    SOCKET ConnectSocket;
-    ConnectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (ConnectSocket == INVALID_SOCKET) {
-        wprintf(L"socket function failed with error: %ld\n", WSAGetLastError());
-        WSACleanup();
-        return 1;
-    }
-
-    struct sockaddr_in sock;
-    sock.sin_family = AF_INET;
-    sock.sin_port = htons(PROXY_PORT);
-    sock.sin_addr.s_addr = inet_addr(PROXY);
-    
-    if (connect(ConnectSocket, (struct sockaddr*)&sock, sizeof(sock)) == SOCKET_ERROR) {
-        printf("Unable to connect to the proxy\n");
-        closesocket(ConnectSocket);
-        WSACleanup();
-        return 1;
-    }
-
-#else 
-    #include <unistd.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h>
-    #include <dlfcn.h> 
-
-#endif

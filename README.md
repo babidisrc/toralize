@@ -13,6 +13,8 @@
 
 Follow these steps to install Toralize on your system:
 
+### From source
+
 1. Clone the repository:
 
 ```bash
@@ -20,43 +22,7 @@ git clone https://github.com/babidisrc/toralize.git
 cd toralize
 ```
 
-2. Create the `install.sh` script in the main folder:
-
-```bash
-#!/bin/bash
-
-SO_PATH="/path/to/toralize/libtoralize.so"
-case "$(uname)" in
-    Linux*)     OS="Linux";;
-    Darwin*)    OS="Mac";;
-    CYGWIN*|MINGW*) OS="Windows";;
-    *)          OS="Unknown";;
-esac
-
-if [ ! -f "$SO_PATH" ]; then
-    echo "ERROR: Shared object file not found at $SO_PATH"
-    exit 1
-fi
-
-if [ "$OS" = "Mac" ]; then
-    export DYLD_INSERT_LIBRARIES="$SO_PATH"
-elif [ "$OS" = "Linux" ]; then
-    export LD_PRELOAD="$SO_PATH"
-else
-    echo "ERROR: Unsupported operating system: $OS"
-    exit 1
-fi
-
-if ! "$@"; then
-    echo "ERROR: Failed to execute command: $@"
-    unset LD_PRELOAD DYLD_INSERT_LIBRARIES
-    exit 1
-fi
-
-unset LD_PRELOAD DYLD_INSERT_LIBRARIES
-```
-
-3. Build the shared object file:
+2. Build the shared object file:
 
 ```bash
 mkdir build
@@ -65,10 +31,35 @@ sudo cmake ..
 sudo make
 ```
 
-4. Install the library (requires root permissions):
+3. Install the library (requires root permissions):
 
 ```bash
 sudo make install
+```
+
+### Using Docker
+
+If you prefer using Docker, follow these steps:
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/babidisrc/toralize.git
+cd toralize
+```
+
+2. Build and run the Docker container:
+
+```bash
+docker build -t toralize .
+sudo docker run -it --rm -p 9060:9050 toralize
+
+```
+
+3. Access the container:
+
+```bash
+docker exec -it toralize bash
 ```
 
 ## Usage

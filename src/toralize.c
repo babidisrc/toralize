@@ -1,5 +1,6 @@
 #include "toralize.h"
 
+
 static sReq *request(struct sockaddr_in *addr) {
     sReq *req;
 
@@ -14,7 +15,9 @@ static sReq *request(struct sockaddr_in *addr) {
     return req;
 }
 
-int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {      
+
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {    
+
     int s = 0;
     struct sockaddr_in sock;
     sReq *req = 0;
@@ -39,7 +42,7 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
         perror("connect");
         exit(EXIT_FAILURE);
     }
-
+    
     req = request((struct sockaddr_in *)addr);
     write(s, req, sizeof(struct proxy_request));
 
