@@ -24,9 +24,36 @@ cd toralize
 
 ```bash
 #!/bin/bash
-export LD_PRELOAD="path/to/toralize/libtoralize.so"
-"$@"
-unset LD_PRELOAD
+
+SO_PATH="/path/to/toralize/libtoralize.so"
+case "$(uname)" in
+    Linux*)     OS="Linux";;
+    Darwin*)    OS="Mac";;
+    CYGWIN*|MINGW*) OS="Windows";;
+    *)          OS="Unknown";;
+esac
+
+if [ ! -f "$SO_PATH" ]; then
+    echo "ERROR: Shared object file not found at $SO_PATH"
+    exit 1
+fi
+
+if [ "$OS" = "Mac" ]; then
+    export DYLD_INSERT_LIBRARIES="$SO_PATH"
+elif [ "$OS" = "Linux" ]; then
+    export LD_PRELOAD="$SO_PATH"
+else
+    echo "ERROR: Unsupported operating system: $OS"
+    exit 1
+fi
+
+if ! "$@"; then
+    echo "ERROR: Failed to execute command: $@"
+    unset LD_PRELOAD DYLD_INSERT_LIBRARIES
+    exit 1
+fi
+
+unset LD_PRELOAD DYLD_INSERT_LIBRARIES
 ```
 
 3. Build the shared object file:

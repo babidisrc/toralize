@@ -7,9 +7,13 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall          
     -Wextra        
 )
-find_library(DL_LIBRARY dl REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${DL_LIBRARY})
-target_compile_definitions(${PROJECT_NAME} PRIVATE _GNU_SOURCE)
+if(WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _WIN32)
+else()
+    find_library(DL_LIBRARY dl REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${DL_LIBRARY})
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _GNU_SOURCE)
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES 
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}

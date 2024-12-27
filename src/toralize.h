@@ -63,6 +63,18 @@ int connect(int, const struct sockaddr*, socklen_t);
         return 1;
     }
 
+    struct sockaddr_in sock;
+    sock.sin_family = AF_INET;
+    sock.sin_port = htons(PROXY_PORT);
+    sock.sin_addr.s_addr = inet_addr(PROXY);
+    
+    if (connect(ConnectSocket, (struct sockaddr*)&sock, sizeof(sock)) == SOCKET_ERROR) {
+        printf("Unable to connect to the proxy\n");
+        closesocket(ConnectSocket);
+        WSACleanup();
+        return 1;
+    }
+
 #else 
     #include <unistd.h>
     #include <sys/socket.h>
