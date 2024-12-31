@@ -4,7 +4,6 @@
 
 
 ## Requirements
-- Linux environment.
 - `gcc` or compatible compiler.
 - SOCKS4-compatible proxy (default is 127.0.0.1:9050 for Tor).
 
